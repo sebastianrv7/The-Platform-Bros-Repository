@@ -32,7 +32,8 @@ public class Player1Controls : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            manager.ActivarPrimeraPlataforma();
+            manager.IntentarSubirIndice();          // 1. primero intenta subir
+            manager.ActivarPlataformaActual(PlatformManager.Jugador.Jugador1);
         }
     }
 }
