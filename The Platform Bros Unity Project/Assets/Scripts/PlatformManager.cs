@@ -7,6 +7,10 @@ public class PlatformManager : MonoBehaviour
     public GameObject[] plataformas;
 
     private int indice = 0;
+
+    private GameObject plataformaJugador1;
+    private GameObject plataformaJugador2;
+
     public enum Jugador
     {
         Jugador1,
@@ -30,28 +34,61 @@ public class PlatformManager : MonoBehaviour
     {
         if (indice >= plataformas.Length) return;
 
-        GameObject plataforma = plataformas[indice];
+        GameObject nuevaPlataforma = plataformas[indice];
 
-        // Evita reactivar la misma plataforma varias veces
-        if (!plataforma.activeSelf)
+        if (jugador == Jugador.Jugador1)
         {
-            plataforma.SetActive(true);
-
-            SpriteRenderer sr = plataforma.GetComponent<SpriteRenderer>();
-
-            if (sr != null)
+            //  Si el otro jugador tenía esta misma plataforma  limpiarlo
+            if (plataformaJugador2 == nuevaPlataforma)
             {
-                Color color;
-
-                if (jugador == Jugador.Jugador1)
-                    ColorUtility.TryParseHtmlString("#66A2FF", out color);
-                else
-                    ColorUtility.TryParseHtmlString("#F59B60", out color);
-
-                sr.color = color;
+                plataformaJugador2 = null;
             }
 
-            Debug.Log("Plataforma " + indice + " activada por " + jugador);
+            // Apagar la anterior de jugador 1
+            if (plataformaJugador1 != null)
+                plataformaJugador1.SetActive(false);
+
+            plataformaJugador1 = nuevaPlataforma;
         }
+        else
+        {
+            //  Si el otro jugador tenía esta misma plataforma  limpiarlo
+            if (plataformaJugador1 == nuevaPlataforma)
+            {
+                plataformaJugador1 = null;
+            }
+
+            // Apagar la anterior de jugador 2
+            if (plataformaJugador2 != null)
+                plataformaJugador2.SetActive(false);
+
+            plataformaJugador2 = nuevaPlataforma;
+        }
+
+        // Activar nueva
+        nuevaPlataforma.SetActive(true);
+
+        // Color
+        SpriteRenderer sr = nuevaPlataforma.GetComponent<SpriteRenderer>();
+
+        if (sr != null)
+        {
+            Color color;
+
+            if (jugador == Jugador.Jugador1)
+                ColorUtility.TryParseHtmlString("#66A2FF", out color);
+            else
+                ColorUtility.TryParseHtmlString("#F59B60", out color);
+
+            sr.color = color;
+        }
+
+        Debug.Log("Jugador " + jugador + " activó plataforma " + indice);
+    }
+
+    public void ReiniciarIndice()
+    {
+        indice = 0;      
+        Debug.Log("Indice reiniciado a 0");
     }
 }

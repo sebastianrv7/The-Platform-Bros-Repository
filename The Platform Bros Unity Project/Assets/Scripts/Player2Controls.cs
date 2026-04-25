@@ -11,6 +11,8 @@ public class Player2Controls : MonoBehaviour
 
     public PlatformManager manager;
 
+    private bool puedeSaltar = false;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -25,17 +27,36 @@ public class Player2Controls : MonoBehaviour
 
         rb.velocity = new Vector2(movX * velocidad, rb.velocity.y);
 
-        bool enSuelo = Physics2D.Raycast(transform.position, Vector2.down, 1.1f);
-
-        if (Input.GetKeyDown(KeyCode.W) && enSuelo)
+        //  Salto controlado
+        if (Input.GetKeyDown(KeyCode.W) && puedeSaltar)
         {
             rb.velocity = new Vector2(rb.velocity.x, fuerzaSalto);
+            puedeSaltar = false; // bloquea salto en el aire
         }
 
+        // Crear plataforma
         if (Input.GetKeyDown(KeyCode.S))
         {
-            manager.IntentarSubirIndice();          // 1. primero intenta subir
+            manager.IntentarSubirIndice();
             manager.ActivarPlataformaActual(PlatformManager.Jugador.Jugador2);
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        int layer = collision.gameObject.layer;
+
+        //  Piso real  reinicia TODO
+        if (layer == LayerMask.NameToLayer("Ground"))
+        {
+            manager.ReiniciarIndice();
+            puedeSaltar = true;
+        }
+
+        //  Plataforma  solo reinicia salto
+        if (layer == LayerMask.NameToLayer("Platform"))
+        {
+            puedeSaltar = true;
         }
     }
 }
